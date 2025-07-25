@@ -62,7 +62,64 @@ class _TodoAppState extends State<TodoApp> {
       fetchTasks();
     }
   }
+  Future<void> updateTask(int id, String newTitle) async {
+  final url = Uri.parse("http://localhost:8080/api/todos/$id");
 
+  final response = await http.put(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: json.encode({
+      "title": newTitle,
+      "completed": false,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    fetchTasks(); // refresh list
+  } else {
+    print('Failed to update task');
+  }
+}
+void _showEditDialog(BuildContext context, int index, Map<String, dynamic> task) {
+    final TextEditingController editController =
+        TextEditingController(text: task['title']);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: const Text('Edit Task', style: TextStyle(color: Colors.white)),
+          content: TextField(
+            controller: editController,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: 'Enter new title',
+              hintStyle: TextStyle(color: Colors.white54),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final newTitle = editController.text.trim();
+                if (newTitle.isNotEmpty) {
+                  updateTask(task['id'], newTitle);
+                  Navigator.of(context).pop();
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,11 +176,20 @@ class _TodoAppState extends State<TodoApp> {
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: ListTile(
                             title: Text(task['title'], style: const TextStyle(color: Colors.white)),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.white),
-                              onPressed: () => deleteTask(task['id']),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.white),
+                                  onPressed: () => _showEditDialog(context, index, task),
+                                ),
+                               IconButton(
+                                 icon: const Icon(Icons.delete, color: Colors.white),
+                                 onPressed: () => deleteTask(task['id']),
+                                ),
+                              ],
                             ),
-                          ),
+                          )
                         );
                       },
                     ),

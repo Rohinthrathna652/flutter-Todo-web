@@ -3,6 +3,7 @@ package com.workshop.todo.controller;
 import com.workshop.todo.model.Todo;
 import com.workshop.todo.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,14 @@ public class TodoController {
         return todoRepository.save(todo);
     }
 
+		@PutMapping("/todos/{id}") // i am to lazy to add this in my first commit 
+public ResponseEntity<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo updatedTodo) {
+    return todoRepository.findById(id).map(todo -> {
+        todo.setTitle(updatedTodo.getTitle());
+        todo.setCompleted(updatedTodo.isCompleted()); // we already made a completed in the model 
+        return ResponseEntity.ok(todoRepository.save(todo));
+    }).orElse(ResponseEntity.notFound().build()); // help later 
+}
     @DeleteMapping("/{id}")
     public void deleteTodo(@PathVariable Long id) {
         todoRepository.deleteById(id);

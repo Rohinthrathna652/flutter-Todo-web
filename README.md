@@ -22,6 +22,7 @@ todo-app/
 
 - Add tasks
 - Delete tasks
+- Update tasks
 - Save tasks to backend
 - Responsive UI (Flutter Web)
 - RESTful API (Spring Boot)
@@ -58,7 +59,8 @@ todo-app/
 ---
 ## 📸 Screenshots 
 
-<img width="361" height="600" alt="image" src=Screenshot.png />
+<img width="361" height="600" alt="image" src=Screenshot-1.png />
+<img width="361" height="600" alt="image" src=Screenshot-2.png />
 
 
 
